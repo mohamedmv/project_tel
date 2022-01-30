@@ -1,9 +1,13 @@
+import 'package:card_numbers_form_camera/card_numbers_form_camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import '../aboutScreen.dart';
 import '../comun/comunServices.dart';
 import '../constant.dart';
 import '../service/Services.dart';
 import '../service/recharge.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
 
 class Home extends StatefulWidget {
   @override
@@ -60,13 +64,7 @@ class _HomeState extends State<Home> {
                       idsim: idsim!,
                     )
                   : Container(),
-      floatingActionButton: FloatingActionButton.extended(
-        key: null,
-        backgroundColor: mycolor,
-        onPressed: () => recharge(context, nomSim!),
-        icon: Icon(Icons.add),
-        label: Text(tr("recharge")),
-      ),
+      floatingActionButton: RechargeButton(sim : nomSim!),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _activeScreen!,
         items: [
@@ -131,3 +129,60 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
+class RechargeButton extends StatelessWidget {
+  String sim;
+   RechargeButton({ Key? key  , required this.sim}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SpeedDial(
+      icon: Icons.add,
+      label:Text(tr("recharge")) ,
+      children: [
+        SpeedDialChild(
+          child: Icon(Icons.document_scanner_outlined),
+          label: 'scanner',
+          onTap: () async{
+            String cardNum= await getCardNumbers(context);
+            print("|| card: $cardNum");
+            FlutterPhoneDirectCaller.callNumber(
+                                  "${chargecode[sim]} $cardNum #");
+          }
+
+        ),
+
+          SpeedDialChild(
+          child: Icon(Icons.input),
+          label: 'taper',
+          onTap: (){
+            recharge(context, sim);
+          }
+        )
+
+
+      ],
+      
+    );
+  }
+}
+
+
+/*
+
+FloatingActionButton.extended(
+        key: null,
+        backgroundColor: mycolor,
+        onPressed: () async{
+          String cardNum= await getCardNumbers(context);
+            print("|| card: $cardNum");
+            FlutterPhoneDirectCaller.callNumber(
+                                  "${chargecode[nomSim!]} $cardNum #");
+          //rechange with typing
+         // recharge(context, nomSim!),
+        } ,
+        icon: Icon(Icons.add),
+        label: Text(tr("recharge")),
+      ),
+
+*/
