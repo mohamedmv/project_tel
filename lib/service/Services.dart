@@ -18,7 +18,9 @@ class Services extends StatefulWidget {
 Map<String, dynamic> icons = {
   "internet": Icons.network_wifi,
   "voix": Icons.keyboard_voice_outlined,
-  'message': Icons.message_outlined
+  'message': Icons.message_outlined,
+  'cadeau' : Icons.card_giftcard,
+  'mix' : Icons.schema_outlined
 };
 
 class _ServicesState extends State<Services> {

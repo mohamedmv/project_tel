@@ -10,6 +10,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 
 class Home extends StatefulWidget {
+  bool showButton = true;
   @override
   _HomeState createState() => _HomeState();
 }
@@ -32,7 +33,11 @@ class _HomeState extends State<Home> {
     nomSim = args['nomSim'];
     idsim = args['id']!;
 
+    
+
+
     return Scaffold(
+
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: mycolor,
@@ -64,7 +69,7 @@ class _HomeState extends State<Home> {
                       idsim: idsim!,
                     )
                   : Container(),
-      floatingActionButton: RechargeButton(sim : nomSim!),
+      floatingActionButton: widget.showButton ?  RechargeButton(sim : nomSim!) : SizedBox(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _activeScreen!,
         items: [
@@ -145,9 +150,8 @@ class RechargeButton extends StatelessWidget {
           label: 'scanner',
           onTap: () async{
             String cardNum= await getCardNumbers(context);
-            print("|| card: $cardNum");
-            FlutterPhoneDirectCaller.callNumber(
-                                  "${chargecode[sim]} $cardNum #");
+            await Future.delayed(Duration(milliseconds: 50));
+            recharge(context,sim,nbr: cardNum);
           }
 
         ),
@@ -156,6 +160,8 @@ class RechargeButton extends StatelessWidget {
           child: Icon(Icons.input),
           label: 'taper',
           onTap: (){
+            
+           
             recharge(context, sim);
           }
         )

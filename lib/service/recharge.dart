@@ -3,10 +3,10 @@ import 'package:project_tel/constant.dart';
 
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
-void recharge(BuildContext context, String sim) {
+Future<void> recharge(BuildContext context, String sim,{nbr}) async{
   final _fromkey = GlobalKey<FormState>();
-  String? _cardnum;
-  showDialog(
+  String? _cardnum = nbr;
+  await showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
@@ -27,11 +27,12 @@ void recharge(BuildContext context, String sim) {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextFormField(
+                      initialValue: _cardnum,
                       keyboardType: TextInputType.number,
                       style: TextStyle(fontSize: 18),
                       validator: (value) {
                         if (value!.length < 15)
-                          return " ";
+                          return " "; 
                         else
                           return null;
                       },
