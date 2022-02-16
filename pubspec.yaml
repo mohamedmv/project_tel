@@ -38,6 +38,9 @@ dependencies:
   flutter_spinkit: ^5.0.0
   permission_handler: ^8.3.0
   flutter_phone_direct_caller: ^2.0.0
+  sqflite: ^2.0.2
+
+  
   evry_sim_in_phone:
       git:
         url: https://github.com/mohamedmv/evry_sim_in_phone.git

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
-
+import 'package:sqflite/sqflite.dart';
 import '../models.dart';
 
 Future<String> get localPath async {
@@ -14,6 +14,26 @@ Future<File> _localFile(String nomsim) async {
   final path = await localPath;
 
   return File('$path/$nomsim.txt');
+}
+
+Future<String > dbPath() async {
+  var databasesPath = await getDatabasesPath();
+  String dbName = "recomandation.db";
+return "$databasesPath$dbName";
+}
+
+Future<Database> getDB() async{
+ String path = await dbPath();
+ return await openDatabase(path, version: 1,
+    onCreate: (Database db, int version) async {
+  // When creating the db, create the table
+  await db.execute(
+      'CREATE TABLE Servicemattel (id INTEGER PRIMARY KEY AUTOINCREMENT, sId TEXT, count INTEGER)');
+      await db.execute(
+      'CREATE TABLE Servicemauritel(id INTEGER PRIMARY KEY AUTOINCREMENT, sId TEXT, count INTEGER)');
+      await db.execute(
+      'CREATE TABLE Servicemauritani (id INTEGER PRIMARY KEY AUTOINCREMENT, sId TEXT, count INTEGER)');
+});
 }
 
 Future<File> write(String counter, String nomsim) async {
@@ -45,81 +65,41 @@ String asString(List<Service> l) {
   return s;
 }
 
-List<Service> asListService(String s) {
-  if (s == null || s == "") return [];
-  List<Service> l = List<Service>.empty(growable: true);
-
-  List<String> ls = s.split(';;');
-  List<String> t;
-  for (int i = 0; i < ls.length - 1; i++) {
-    t = ls[i].split(';');
-    l.add(new Service(
-      id: t[0],
-      count: int.parse(t[1]),
-    ));
-  }
-
-  return l;
-}
-
 Future<void> incremant(Service s, String nomsim) async {
-  String? st = await read(nomsim);
-  List<Service> l = [];
-
-  l = asListService(st!);
-
-  bool b = true;
-  int index=0;
-  for (int i = 0; i < l.length; i++) {
-    if (l[i].id == s.id) {
-      l[i].count = l[i].count!+1;
-      index = i;
-      b = false;
-      break;
-    }
+  Database db = await getDB();
+  List<Map> data = await db.rawQuery("select * from service$nomsim where sId = '${s.id}' ");
+  if(data.isEmpty) {
+    await db.transaction((txn) async {
+  int id1 = await txn.rawInsert(
+      "INSERT INTO service$nomsim ( sId , count ) VALUES('${s.id}', 1)");
+  print('inserted1: $id1');
+ ;
+});
   }
-  if (b) {
-    s.count = 1;
-    l.add(s);
-  } else {
-    int i = index;
-    int r = index;
-    while (i != 0 && l[i].count !> l[i - 1].count!) {
-      r = index - 1;
-      i--;
-    }
-    if (r != index) {
-      final temp = l[index];
+  else{
+    int count = data[0]['count']+1;
+    int id = data[0]['id'];
+    int result = await db.rawUpdate(
+    'UPDATE service$nomsim  SET count = ? WHERE id = ?',
+    [count,id]);
 
-      l[index] = l[r];
-      l[r] = temp;
-      r = index;
-    }
-    int n = l.length;
-    while (i != n - 1 && l[i].count !< l[i + 1].count!) {
-      r = i + 1;
-      i++;
-    }
-    if (r != index) {
-      Service temp;
-      temp = l[index];
-      l[index] = l[r];
-      l[r] = temp;
-    }
   }
-
-  st = asString(l);
-  await write(st, nomsim);
 }
 
-Future<List<Service>> sortedListService(String nomsim) async {
-  var st = await read(nomsim);
-  if (st == null || st == "") return [];
-  List<Service> l = asListService(st);
-  int end = 5;
-  if (l.length < 5) {
-    end = l.length;
-  }
+Future<List<String>> sortedListService(String nomsim) async {
+  Database db = await getDB();
+   List<String> services = [];
+   List<Map> data = await db.rawQuery(" select  * from service$nomsim ORDER BY count DESC limit 4");
+   
+   for(Map element in data){
+     print("++++++++++++++");
+     print("::${element['sId']}");
 
-  return l.sublist(0, end);
+     services.add( element['sId']  );
+   }
+  
+  
+
+
+  return  services;
 }

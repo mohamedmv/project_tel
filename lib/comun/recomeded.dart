@@ -18,10 +18,15 @@ class Recomended extends StatefulWidget {
 class _RecomendedState extends State<Recomended> {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Service>>(
-        stream: getrecomandedServices(widget.nomsim),
+  
+    return FutureBuilder<List<Service>>(
+        future: getrecomandedServices(widget.nomsim),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.length > 0) {
+            for ( var s  in snapshot.data!){
+                print("::${s.id}");
+            }
+
             snapshot.data!.removeWhere((element) => element == null);
             return SizedBox(
               child: Scaffold(

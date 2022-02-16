@@ -62,14 +62,14 @@ class _HomeState extends State<Home> {
               idsim: idsim,
             )
           : _activeScreen == 2
-              ? About()
+              ? About(nomSim: nomSim!,)
               : _activeScreen == 1
                   ? Services(
                       nomSim: nomSim!,
                       idsim: idsim!,
                     )
                   : Container(),
-      floatingActionButton: widget.showButton ?  RechargeButton(sim : nomSim!) : SizedBox(),
+      floatingActionButton: _activeScreen !=2 ?  RechargeButton(sim : nomSim!) : SizedBox(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _activeScreen!,
         items: [
@@ -95,13 +95,13 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(
               activeIcon: Icon(
-                Icons.feedback_outlined,
+                Icons.change_circle_outlined,
                 color: Colors.green,
               ),
               icon: Icon(
-                Icons.feedback_outlined,
+                Icons.change_circle_outlined,
               ),
-              label: tr('about'))
+              label: tr('transfert'))
         ],
         onTap: (val) async {
           switch (val) {
@@ -125,7 +125,7 @@ class _HomeState extends State<Home> {
             case 2:
               setState(() {
                 _activeScreen = 2;
-                _title = 'about';
+                _title = 'Transfert';
               });
               break;
           }

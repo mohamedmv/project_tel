@@ -73,33 +73,39 @@ Stream<List<Service>> getCompService(TypeService type) async* {
 }
 
 /*---------------------------------------------------*/
-Stream<List<Service>> getrecomandedServices(String nomsim) async* {
-  List<Service> ls = await sortedListService(nomsim);
-  if (ls.isEmpty || ls == null) return;
-  List<String> serviceids = [];
-  for (Service s in ls) {
-    serviceids.add(s.id!);
-    print('-----------id-----------');
-    print('-${s.id}-');
-  }
+Future<List<Service>> getrecomandedServices(String nomsim) async {
+  List<String> ls = await sortedListService(nomsim);
+  
+  
+  List<Service> result = [];
 
-  yield* FirebaseFirestore.instance
-      .collectionGroup('Service')
-      .snapshots()
-      .map((event) {
-    return event.docs.map((e) {
-      print(e.data());
-      if (serviceids.contains(e.id.toString())) {
-        return Service(
-            nom: e.data()['nom'] ?? "Unknown",
-            idComp: ls.first.idComp,
-            id: e.id.toString(),
-            prix: e.data()['prix'] ?? "Unknown",
-            code: e.data()['code'] ?? "Unknown",
-            duree: e.data()['date'] ?? "Unknown");
+
+   QuerySnapshot data =  await FirebaseFirestore.instance
+      .collectionGroup('Service').get();
+
+      for(QueryDocumentSnapshot d in data.docs){
+        if( ls.contains(d.id) ){
+            Map service = d.data() as Map;
+            print(service);
+          result.add(
+            Service(
+            nom: service['nom'] ?? "Unknown",
+            //idComp: ls.first.idComp,
+            id: d.id.toString(),
+            prix:service['prix'] ?? "Unknown",
+            code:service['code'] ?? "Unknown",
+            duree:service['date'] ?? "Unknown")
+          );
+     
+        }
       }
-    }).skipWhile((value) {
-      return  value==null;
-    } ).toList() as List<Service>;
-  });
+      List<Service> Sorted = [];
+      for(String id in ls){
+
+        for(Service ss in result){
+          if(ss.id == id) Sorted.add(ss);
+        }
+      }
+
+  return Sorted;
 }
