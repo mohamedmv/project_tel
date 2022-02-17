@@ -36,10 +36,17 @@ class _AboutState extends State<About> {
           children: [
            
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal:20.0,vertical: 5),
               child: TextFormField(
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(hintText: 'Numero'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+
+                    borderRadius: BorderRadius.circular(20)),
+                 contentPadding: EdgeInsets.only(left: 25, top: 20,bottom: 20) ,
+                  label: Text("Numero")
+                  ),
+                
                 controller: _number,
                 validator: (value){
                   
@@ -49,10 +56,16 @@ class _AboutState extends State<About> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal:20.0,vertical: 5),
               child: TextFormField(
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(hintText: 'montant'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+
+                    borderRadius: BorderRadius.circular(20)),
+                 contentPadding: EdgeInsets.only(left: 25, top: 20,bottom: 20) ,
+                  label: Text("montant")
+                  ),
                 controller: _credit,
                  validator: (value){
                   if(value!.length < 1) return "credit";
@@ -62,10 +75,17 @@ class _AboutState extends State<About> {
        
 
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal:20.0,vertical: 5),
               child: TextFormField(
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(hintText: 'code'),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+
+                    borderRadius: BorderRadius.circular(20)),
+                 contentPadding: EdgeInsets.only(left: 25, top: 20,bottom: 20) ,
+                  label: Text("code")
+                  ),
+                
                 controller: _code,
                 validator: (value){
                   if(value!.length != 4) return "code";
@@ -77,7 +97,10 @@ class _AboutState extends State<About> {
                
             Center(
                 child: ElevatedButton(
-              child: Text('transfert'),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('transfert'),
+              ),
               onPressed: (){
                 if(_formKey.currentState!.validate()){
                   makeTransfer(code: _code.text,credit: _credit.text,number: _number.text);

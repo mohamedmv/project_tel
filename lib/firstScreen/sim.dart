@@ -1,4 +1,8 @@
 
+
+
+import 'dart:io';
+
 import 'package:permission_handler/permission_handler.dart';
 
 import '../database.dart';
@@ -7,7 +11,14 @@ import 'package:evry_sim_in_phone/evry_sim_in_phone.dart';
 
 
 List<String> companies = ["mattel", "mauritel", "chinguitel"];
+
+
 Future<Map<String, dynamic>> getSimInfo() async {
+
+  if(Platform.isIOS){
+    return  {'sims': ["mauritani","d1a647f3c0b14cb2b1b4"], 'per': true};
+    
+  }
   List<List<String>> sims = [];
   await intializeDatabase();
 
